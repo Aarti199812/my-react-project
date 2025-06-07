@@ -1,40 +1,51 @@
-import React, { useEffect, useState } from 'react'
-import { useStateContext } from '../Context'
-//images
-import Clear from '../assets/images/Clear.jpg'
-import Fog from '../assets/images/fog.png'
-import Cloudy from '../assets/images/Cloudy.jpg'
-import Rainy from '../assets/images/Rainy.jpg'
-import Snow from '../assets/images/snow.jpg'
-import Stormy from '../assets/images/Stormy.jpg'
-import Sunny from '../assets/images/Sunny.jpg'
+import React from 'react';
+import { useStateContext } from '../Context';
+
+import sunVideo from '../assets/gif/sunny.mp4';
+import rainVideo from '../assets/gif/rain.mp4';
+import cloudyVideo from '../assets/gif/cloud.mp4';
+import snowVideo from '../assets/gif/snowy.mp4';
+import fogVideo from '../assets/gif/fogg.mp4';
+import stormVideo from '../assets/gif/stormy.mp4';
+
+
+const weatherVideoMap = {
+  clear: sunVideo,
+  sun: sunVideo,
+  cloudy: cloudyVideo,
+  fog: fogVideo,
+  rain: rainVideo,
+  shower: rainVideo,
+  snow: snowVideo,
+  thunder: stormVideo,
+  storm: stormVideo,
+};
 
 const BackGroundLayout = () => {
+  const { weather } = useStateContext();
 
-  const { weather } = useStateContext()
-  const [image, setImage] = useState(Clear)
+  let videoSrc = sunVideo; 
 
-  useEffect(() => {
-    if (weather.conditions) {
-      let imageString = weather.conditions
-      if (imageString.toLowerCase().includes('clear')) {
-        setImage(Clear)
-      } else if (imageString.toLowerCase().includes('cloud')) {
-        setImage(Cloudy)
-      } else if (imageString.toLowerCase().includes('rain') || imageString.toLowerCase().includes('shower')) {
-        setImage(Rainy)
-      } else if (imageString.toLowerCase().includes('snow')) {
-        setImage(Snow)
-      } else if (imageString.toLowerCase().includes('fog')) {
-        setImage(Fog)
-      } else if (imageString.toLowerCase().includes('thunder') || imageString.toLowerCase().includes('storm')) {
-        setImage(Stormy)
+  if (weather?.conditions) {
+    const condition = weather.conditions.toLowerCase();
+
+    for (const key in weatherVideoMap) {
+      if (condition.includes(key)) {
+        videoSrc = weatherVideoMap[key];
+        break;
       }
-    }}, [weather])
+    }
+  }
 
   return (
-    <img src={image} alt="weather_image" className='h-screen w-full fixed left-0 top-0 -z-[10]' />
-  )
-}
+    <video
+      autoPlay
+      loop
+      muted
+      className="fixed inset-0 w-full h-full object-cover -z-10"
+      src={videoSrc}
+    />
+  );
+};
 
-export default BackGroundLayout
+export default BackGroundLayout;
